@@ -1,0 +1,37 @@
+name: gulich
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python<3.10
+  - anaconda
+  - anaconda-client
+  - anaconda-navigator
+  - anaconda-project
+  - certifi
+  - conda
+  - conda-build
+  - conda-content-trust
+  - conda-env
+  - conda-pack
+  - conda-package-handling
+  - conda-repo-cli
+  - conda-token
+  - conda-verify
+  - ipykernel
+  - ipython
+  - ipython_genutils
+  - ipywidgets
+  - jupyter
+  - jupyter_client
+  - jupyter_console
+  - jupyter_core
+  - jupyter_server
+  - jupyterlab
+  - jupyterlab_pygments
+  - jupyterlab_server
+  - jupyterlab_widgets
+  - pip:
+    - pip
+prefix: /opt/anaconda3
