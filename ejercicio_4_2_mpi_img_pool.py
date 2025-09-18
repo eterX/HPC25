@@ -1,4 +1,5 @@
-import multiprocessing as mp
+#import multiprocessing as mp
+from mpi4py import MPI
 import numpy as np
 import time
 import sys
@@ -8,7 +9,7 @@ import cv2
 # Config
 folder_in  = "../data/image_set"
 folder_out = "../data/image_set/output"
-
+nodoRaíz = 0
 
 def procesar_cv(img):
 
@@ -52,7 +53,13 @@ def procesar_imagen (imagen):
 
 if __name__ == '__main__':
 
-    P = mp.cpu_count()
+
+    #P = mp.cpu_count()
+
+    comm = MPI.COMM_WORLD
+    rank   = comm.Get_rank()
+    nprocs = comm.Get_size()
+
 
     start = time.time()
 
@@ -65,8 +72,21 @@ if __name__ == '__main__':
             nombres_imgs.append(imagen)
 
     # 2. Procesar
-    pool = mp.Pool(processes=P)
-    pool.map(procesar_imagen, nombres_imgs) # No necesito la salida
+    if rank == nodoRaíz:
+        data = nombres_imgs
+        print(f"INFO: Rango: {rank} reparto: {len(data)} imágenes")
+    else:
+        data = None
+
+
+    #pool = mp.Pool(processes=P)
+    #pool.map(procesar_imagen, nombres_imgs) # No necesito la salida
+    d = comm.scatter(data, root=nodoRaíz)  # TODOS invocan la op.
+    print(f"INFO: Rango: {rank} procesando: {len(data)} imágenes")
+    for _ in data:
+
+        print("DEBUG: Rango:", rank, "->", _)
+        procesar_imagen(_)
 
     end = time.time()
     print("Time:", end - start)
