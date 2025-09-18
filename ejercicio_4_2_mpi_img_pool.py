@@ -40,8 +40,8 @@ def procesar_imagen (imagen):
     imagen_in  = folder_in + "/" + imagen
     imagen_out = folder_out + "/" + imagen
 
-    nombre = mp.current_process().name
-    print("Proceso", nombre, "procesando:", imagen_in, " ==>> ", imagen_out)
+    nombre = comm.Get_rank()
+    print("DEBUG: rango", nombre, "procesando:", imagen_in, " ==>> ", imagen_out)
 
     img = cv2.imread(imagen_in)
 
@@ -63,16 +63,16 @@ if __name__ == '__main__':
 
     start = time.time()
 
-    # 1. Establecer ruta:
-    os.makedirs(folder_out, exist_ok = True)
-
-    nombres_imgs = list()
-    for imagen in os.listdir(folder_in):
-        if (imagen.endswith(".png") or imagen.endswith(".jpg") or imagen.endswith(".jpeg")):
-            nombres_imgs.append(imagen)
 
     # 2. Procesar
     if rank == nodoRaíz:
+        # 1. Establecer ruta:
+        os.makedirs(folder_out, exist_ok=True)
+
+        nombres_imgs = list()
+        for imagen in os.listdir(folder_in):
+            if (imagen.endswith(".png") or imagen.endswith(".jpg") or imagen.endswith(".jpeg")):
+                nombres_imgs.append(imagen)
         data = nombres_imgs
         print(f"INFO: Rango: {rank} reparto: {len(data)} imágenes")
     else:
