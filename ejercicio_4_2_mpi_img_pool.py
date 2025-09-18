@@ -7,8 +7,8 @@ import os
 import cv2
 
 # Config
-folder_in  = "../data/image_set"
-folder_out = "../data/image_set/output"
+folder_in  = "data/image_set"
+folder_out = "data/image_set/output"
 nodoRaíz = 0
 
 def procesar_cv(img):
@@ -68,22 +68,21 @@ if __name__ == '__main__':
     if rank == nodoRaíz:
         # 1. Establecer ruta:
         os.makedirs(folder_out, exist_ok=True)
-
         nombres_imgs = list()
         for imagen in os.listdir(folder_in):
             if (imagen.endswith(".png") or imagen.endswith(".jpg") or imagen.endswith(".jpeg")):
                 nombres_imgs.append(imagen)
-        data = nombres_imgs
-        print(f"INFO: Rango: {rank} reparto: {len(data)} imágenes")
+        print(f"INFO: Rango: {rank} reparto: {len(nombres_imgs)} imágenes")
+        data_partida = np.array_split(nombres_imgs, nprocs)
     else:
         data = None
 
 
     #pool = mp.Pool(processes=P)
     #pool.map(procesar_imagen, nombres_imgs) # No necesito la salida
-    d = comm.scatter(data, root=nodoRaíz)  # TODOS invocan la op.
-    print(f"INFO: Rango: {rank} procesando: {len(data)} imágenes")
-    for _ in data:
+    d = comm.scatter(data_partida, root=nodoRaíz)  # TODOS invocan la op.
+
+    for _ in d:
 
         print("DEBUG: Rango:", rank, "->", _)
         procesar_imagen(_)
